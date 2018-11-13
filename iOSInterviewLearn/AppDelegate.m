@@ -7,6 +7,9 @@
 //
 
 #import "AppDelegate.h"
+#import "ELObject.h"
+#import "ELObserve.h"
+#import "RuntimeObject.h"
 
 @interface AppDelegate ()
 
@@ -17,6 +20,22 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    ELObject *obj = [[ELObject alloc] init];
+    ELObserve *obs = [[ELObserve alloc] init];
+    
+    // 调用kvo监听
+    [obj addObserver:obs forKeyPath:@"value" options:NSKeyValueObservingOptionNew context:NULL];
+    // 修改value的值
+    obj.value = 1;
+    // 1. 通过kvc设置value能否生效
+    [obj setValue:@2 forKey:@"value"];
+    // 2. 通过成员变量直接赋值value能否生效
+    [obj increase];  // 无法生效  可以通过手动触发KVO方式x实现
+    
+    RuntimeObject *obj1 = [[RuntimeObject alloc] init];
+    // 调用test 方法 只有声明 没有实现
+    [obj1 test];
+    // x总结  kvo生效的方式  1, 使用setter方法改变值  2, 使用setvalue:forKey;   使用成员变量修改不会生效, 可以手动触发KVO
     return YES;
 }
 
